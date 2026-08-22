@@ -1,0 +1,17 @@
+{
+    "name": "ElectroCalc Pro",
+    "short_name": "ElectroCalc",
+    "description": "Calculatrice professionnelle pour les systèmes électriques.",
+    "start_url": "./",
+    "display": "standalone",
+    "background_color": "#f1f5f9",
+    "theme_color": "#2563eb",
+    "lang": "fr",
+    "icons": [
+        {
+            "src": "favicon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml"
+        }
+    ]
+}
