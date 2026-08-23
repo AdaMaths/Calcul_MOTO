@@ -1,0 +1,711 @@
+"use strict";
+
+const form = document.getElementById("calculatorForm");
+const resetBtn = document.getElementById("resetBtn");
+const themeBtn = document.getElementById("themeBtn");
+const exportBtn = document.getElementById("exportBtn");
+const clearHistoryBtn = document.getElementById("clearHistoryBtn");
+
+const errorMessage = document.getElementById("errorMessage");
+const resultsSection = document.getElementById("resultsSection");
+const historyBody = document.getElementById("historyBody");
+const calculationDate = document.getElementById("calculationDate");
+const pedagogicalMode = document.getElementById("pedagogicalMode");
+
+const STORAGE_KEY = "electrocalc_history";
+const THEME_KEY = "electrocalc_theme";
+
+let history = loadHistory();
+
+function getNumber(id) {
+    return Number.parseFloat(document.getElementById(id).value);
+}
+
+function formatNumber(value, decimals = 2) {
+    if (!Number.isFinite(value)) {
+        return "—";
+    }
+
+    return new Intl.NumberFormat("fr-FR", {
+        maximumFractionDigits: decimals,
+        minimumFractionDigits: 0
+    }).format(value);
+}
+
+function showError(message = "") {
+    errorMessage.textContent = message;
+}
+
+function validateInputs(voltage, current, resistance, powerFactor) {
+    if (
+        !Number.isFinite(voltage) ||
+        !Number.isFinite(current) ||
+        !Number.isFinite(resistance) ||
+        !Number.isFinite(powerFactor)
+    ) {
+        return "Veuillez renseigner correctement tous les champs.";
+    }
+
+    if (voltage < 0 || current < 0 || resistance < 0) {
+        return "La tension, le courant et la résistance doivent être positifs.";
+    }
+
+    if (powerFactor <= 0 || powerFactor > 1) {
+        return "Le facteur de puissance doit être compris entre 0 et 1.";
+    }
+
+    if (voltage === 0 && current === 0 && resistance === 0) {
+        return "Veuillez saisir au moins une valeur électrique.";
+    }
+
+    return "";
+}
+
+function calculateValues(voltage, current, resistance, powerFactor) {
+    let calculatedVoltage = voltage;
+    let calculatedCurrent = current;
+    let calculatedResistance = resistance;
+
+    const numberOfEmptyFields = [
+        voltage,
+        current,
+        resistance
+    ].filter(value => value === 0).length;
+
+    if (numberOfEmptyFields > 1) {
+        throw new Error(
+            "Saisissez au moins deux valeurs parmi la tension, le courant et la résistance."
+        );
+    }
+
+    if (voltage === 0) {
+        calculatedVoltage = resistance * current;
+    }
+
+    if (current === 0) {
+        calculatedCurrent = voltage / resistance;
+    }
+
+    if (resistance === 0) {
+        calculatedResistance = voltage / current;
+    }
+
+    const apparentPower = calculatedVoltage * calculatedCurrent;
+    const activePower = apparentPower * powerFactor;
+    const reactivePower = Math.sqrt(
+        Math.max(0, apparentPower ** 2 - activePower ** 2)
+    );
+
+    return {
+        voltage: calculatedVoltage,
+        current: calculatedCurrent,
+        resistance: calculatedResistance,
+        powerFactor,
+        apparentPower,
+        activePower,
+        reactivePower
+    };
+}
+
+function displayResults(values) {
+    document.getElementById("resultVoltage").textContent =
+        `${formatNumber(values.voltage)} V`;
+
+    document.getElementById("resultCurrent").textContent =
+        `${formatNumber(values.current)} A`;
+
+    document.getElementById("resultResistance").textContent =
+        `${formatNumber(values.resistance)} Ω`;
+
+    document.getElementById("resultPower").textContent =
+        `${formatNumber(values.activePower)} W`;
+
+    document.getElementById("resultApparentPower").textContent =
+        `${formatNumber(values.apparentPower)} VA`;
+
+    document.getElementById("resultReactivePower").textContent =
+        `${formatNumber(values.reactivePower)} var`;
+
+    document.getElementById("resultPowerFactor").textContent =
+        formatNumber(values.powerFactor, 2);
+
+    calculationDate.textContent = new Intl.DateTimeFormat("fr-FR", {
+        dateStyle: "medium",
+        timeStyle: "short"
+    }).format(new Date());
+
+    const gaugeFill = document.getElementById("gaugeFill");
+    const gaugePercent = document.getElementById("gaugePercent");
+    if (gaugeFill && gaugePercent) {
+        const pct = Math.round(values.powerFactor * 100);
+        gaugeFill.style.width = `${pct}%`;
+        gaugePercent.textContent = `${pct} %`;
+    }
+
+    if (pedagogicalMode && pedagogicalMode.checked) {
+        showSteps("stepsOhm", "Étapes du calcul", [
+            `U = ${formatNumber(values.voltage)} V, I = ${formatNumber(values.current)} A, R = ${formatNumber(values.resistance)} Ω`,
+            `S = U × I = ${formatNumber(values.apparentPower)} VA`,
+            `P = S × cos φ = ${formatNumber(values.apparentPower)} × ${formatNumber(values.powerFactor, 2)} = ${formatNumber(values.activePower)} W`,
+            `Q = √(S² − P²) = ${formatNumber(values.reactivePower)} var`
+        ]);
+    } else {
+        hideSteps("stepsOhm");
+    }
+
+    resultsSection.classList.remove("hidden");
+}
+
+function saveHistory() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+}
+
+function loadHistory() {
+    try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+    } catch {
+        return [];
+    }
+}
+
+function addHistory(values, type = "Loi d’Ohm") {
+    history.unshift({
+        date: new Date().toISOString(),
+        type,
+        voltage: values.voltage ?? null,
+        current: values.current ?? null,
+        resistance: values.resistance ?? null,
+        power: values.activePower ?? values.power ?? null
+    });
+
+    history = history.slice(0, 20);
+    saveHistory();
+    renderHistory();
+}
+
+function renderHistory() {
+    if (history.length === 0) {
+        historyBody.innerHTML = `
+            <tr>
+                <td colspan="6" class="empty-history">
+                    Aucun calcul enregistré.
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+    historyBody.innerHTML = history.map(item => {
+        const date = new Intl.DateTimeFormat("fr-FR", {
+            dateStyle: "short",
+            timeStyle: "short"
+        }).format(new Date(item.date));
+
+        const cell = value => value === null || value === undefined
+            ? "—"
+            : `${formatNumber(value)}`;
+
+        return `
+            <tr>
+                <td>${item.type ?? "Loi d’Ohm"}</td>
+                <td>${date}</td>
+                <td>${item.voltage !== null ? cell(item.voltage) + " V" : "—"}</td>
+                <td>${item.current !== null ? cell(item.current) + " A" : "—"}</td>
+                <td>${item.resistance !== null ? cell(item.resistance) + " Ω" : "—"}</td>
+                <td>${item.power !== null ? cell(item.power) + " W" : "—"}</td>
+            </tr>
+        `;
+    }).join("");
+}
+
+function exportHistory() {
+    if (history.length === 0) {
+        showError("L’historique est vide.");
+        return;
+    }
+
+    const headers = [
+        "Type",
+        "Date",
+        "Tension (V)",
+        "Courant (A)",
+        "Résistance (Ohm)",
+        "Puissance active (W)"
+    ];
+
+    const rows = history.map(item => [
+        item.type ?? "Loi d’Ohm",
+        new Date(item.date).toLocaleString("fr-FR"),
+        item.voltage ?? "",
+        item.current ?? "",
+        item.resistance ?? "",
+        item.power ?? ""
+    ]);
+
+    const csvContent = [
+        headers,
+        ...rows
+    ]
+        .map(row =>
+            row.map(value => `"${String(value).replaceAll('"', '""')}"`)
+                .join(";")
+        )
+        .join("\n");
+
+    const blob = new Blob(
+        ["\ufeff" + csvContent],
+        { type: "text/csv;charset=utf-8;" }
+    );
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.download = "electrocalc-historique.csv";
+    link.click();
+
+    URL.revokeObjectURL(url);
+    showError("");
+}
+
+function loadTheme() {
+    const savedTheme = localStorage.getItem(THEME_KEY);
+
+    if (savedTheme === "dark") {
+        document.body.classList.add("dark");
+        themeBtn.innerHTML = `<i class="fa-solid fa-sun"></i>`;
+    }
+}
+
+form.addEventListener("submit", event => {
+    event.preventDefault();
+    showError("");
+
+    const voltage = getNumber("voltage");
+    const current = getNumber("current");
+    const resistance = getNumber("resistance");
+    const powerFactor = getNumber("powerFactor");
+
+    const validationError = validateInputs(
+        voltage,
+        current,
+        resistance,
+        powerFactor
+    );
+
+    if (validationError) {
+        showError(validationError);
+        return;
+    }
+
+    try {
+        const values = calculateValues(
+            voltage,
+            current,
+            resistance,
+            powerFactor
+        );
+
+        displayResults(values);
+        addHistory(values);
+    } catch (error) {
+        showError(error.message);
+    }
+});
+
+resetBtn.addEventListener("click", () => {
+    form.reset();
+    document.getElementById("powerFactor").value = "1";
+    resultsSection.classList.add("hidden");
+    showError("");
+});
+
+clearHistoryBtn.addEventListener("click", () => {
+    if (history.length === 0) {
+        return;
+    }
+
+    const confirmed = window.confirm(
+        "Voulez-vous vraiment supprimer tout l’historique ?"
+    );
+
+    if (!confirmed) {
+        return;
+    }
+
+    history = [];
+    saveHistory();
+    renderHistory();
+});
+
+exportBtn.addEventListener("click", exportHistory);
+
+themeBtn.addEventListener("click", () => {
+    const isDark = document.body.classList.toggle("dark");
+
+    localStorage.setItem(
+        THEME_KEY,
+        isDark ? "dark" : "light"
+    );
+
+    themeBtn.innerHTML = isDark
+        ? `<i class="fa-solid fa-sun"></i>`
+        : `<i class="fa-solid fa-moon"></i>`;
+});
+
+document.querySelectorAll("input").forEach(input => {
+    input.addEventListener("input", () => {
+        showError("");
+    });
+});
+
+loadTheme();
+renderHistory();
+
+
+const menuBtn = document.getElementById("menuBtn");
+const mainNav = document.getElementById("mainNav");
+const navLinks = document.querySelectorAll(".nav-link");
+
+if (menuBtn && mainNav) {
+    menuBtn.addEventListener("click", () => {
+        const isOpen = mainNav.classList.toggle("open");
+
+        menuBtn.setAttribute(
+            "aria-expanded",
+            String(isOpen)
+        );
+
+        menuBtn.setAttribute(
+            "aria-label",
+            isOpen ? "Fermer le menu" : "Ouvrir le menu"
+        );
+
+        menuBtn.innerHTML = isOpen
+            ? `<i class="fa-solid fa-xmark" aria-hidden="true"></i>`
+            : `<i class="fa-solid fa-bars" aria-hidden="true"></i>`;
+    });
+}
+
+navLinks.forEach(link => {
+    link.addEventListener("click", () => {
+        navLinks.forEach(item => {
+            item.classList.remove("active");
+        });
+
+        link.classList.add("active");
+
+        if (mainNav) {
+            mainNav.classList.remove("open");
+        }
+
+        if (menuBtn) {
+            menuBtn.setAttribute("aria-expanded", "false");
+            menuBtn.setAttribute("aria-label", "Ouvrir le menu");
+            menuBtn.innerHTML =
+                `<i class="fa-solid fa-bars" aria-hidden="true"></i>`;
+        }
+    });
+});
+
+/* ==========================================================
+   Onglets des calculateurs
+   ========================================================== */
+const calcTabs = document.querySelectorAll(".calc-tab");
+const calcPanels = document.querySelectorAll(".calc-panel");
+
+calcTabs.forEach(tab => {
+    tab.addEventListener("click", () => {
+        calcTabs.forEach(t => {
+            t.classList.remove("active");
+            t.setAttribute("aria-selected", "false");
+        });
+
+        calcPanels.forEach(p => p.classList.remove("active"));
+
+        tab.classList.add("active");
+        tab.setAttribute("aria-selected", "true");
+
+        const panel = document.getElementById(tab.dataset.panel);
+        if (panel) {
+            panel.classList.add("active");
+        }
+    });
+});
+
+/* ==========================================================
+   Helpers "mode pédagogique"
+   ========================================================== */
+function showSteps(elementId, title, lines) {
+    const box = document.getElementById(elementId);
+    if (!box) {
+        return;
+    }
+
+    box.innerHTML = `<span class="step-title">${title}</span>` +
+        lines.map(line => `<span class="step-line">${line}</span>`).join("");
+
+    box.classList.add("visible");
+}
+
+function hideSteps(elementId) {
+    const box = document.getElementById(elementId);
+    if (box) {
+        box.classList.remove("visible");
+        box.innerHTML = "";
+    }
+}
+
+if (pedagogicalMode) {
+    pedagogicalMode.addEventListener("change", () => {
+        if (!pedagogicalMode.checked) {
+            [
+                "stepsOhm", "stepsTriphase", "stepsMoteur",
+                "stepsTransfo", "stepsCouplage"
+            ].forEach(hideSteps);
+        }
+    });
+}
+
+/* ==========================================================
+   Calculateur triphasé
+   ========================================================== */
+const formTriphase = document.getElementById("formTriphase");
+
+if (formTriphase) {
+    formTriphase.addEventListener("submit", event => {
+        event.preventDefault();
+
+        const errorEl = document.getElementById("errorTriphase");
+        const resultsEl = document.getElementById("resultsTriphase");
+        errorEl.textContent = "";
+
+        const u = Number.parseFloat(document.getElementById("triU").value);
+        const i = Number.parseFloat(document.getElementById("triI").value);
+        const cos = Number.parseFloat(document.getElementById("triCos").value);
+
+        if (!Number.isFinite(u) || !Number.isFinite(i) || !Number.isFinite(cos)) {
+            errorEl.textContent = "Veuillez renseigner la tension, le courant et le facteur de puissance.";
+            resultsEl.classList.add("hidden");
+            return;
+        }
+
+        if (u <= 0 || i <= 0 || cos <= 0 || cos > 1) {
+            errorEl.textContent = "Vérifiez vos valeurs : U et I doivent être positifs, cos φ compris entre 0 et 1.";
+            resultsEl.classList.add("hidden");
+            return;
+        }
+
+        const s = Math.sqrt(3) * u * i;
+        const p = s * cos;
+        const q = Math.sqrt(Math.max(0, s ** 2 - p ** 2));
+        const iPhaseY = i;
+
+        document.getElementById("triS").textContent = `${formatNumber(s)} VA`;
+        document.getElementById("triP").textContent = `${formatNumber(p)} W`;
+        document.getElementById("triQ").textContent = `${formatNumber(q)} var`;
+        document.getElementById("triIphase").textContent = `${formatNumber(iPhaseY)} A`;
+        resultsEl.classList.remove("hidden");
+
+        if (pedagogicalMode && pedagogicalMode.checked) {
+            showSteps("stepsTriphase", "Étapes du calcul", [
+                `S = √3 × U × I = √3 × ${formatNumber(u)} × ${formatNumber(i)} = ${formatNumber(s)} VA`,
+                `P = S × cos φ = ${formatNumber(s)} × ${formatNumber(cos, 2)} = ${formatNumber(p)} W`,
+                `Q = √(S² − P²) = ${formatNumber(q)} var`,
+                `En couplage étoile, I par enroulement = I ligne = ${formatNumber(iPhaseY)} A`
+            ]);
+        } else {
+            hideSteps("stepsTriphase");
+        }
+
+        addHistory({ voltage: u, current: i, resistance: null, power: p }, "Triphasé");
+    });
+}
+
+/* ==========================================================
+   Calculateur moteur asynchrone
+   ========================================================== */
+const formMoteur = document.getElementById("formMoteur");
+
+if (formMoteur) {
+    formMoteur.addEventListener("submit", event => {
+        event.preventDefault();
+
+        const errorEl = document.getElementById("errorMoteur");
+        const resultsEl = document.getElementById("resultsMoteur");
+        errorEl.textContent = "";
+
+        const f = Number.parseFloat(document.getElementById("motF").value);
+        const p = Number.parseInt(document.getElementById("motP").value, 10);
+        const nInput = document.getElementById("motN").value;
+        const puisInput = document.getElementById("motPuis").value;
+        const n = nInput === "" ? null : Number.parseFloat(nInput);
+        const puissance = puisInput === "" ? null : Number.parseFloat(puisInput);
+
+        if (!Number.isFinite(f) || !Number.isInteger(p) || p < 1) {
+            errorEl.textContent = "Veuillez renseigner la fréquence et un nombre entier de paires de pôles (≥ 1).";
+            resultsEl.classList.add("hidden");
+            return;
+        }
+
+        if (f <= 0) {
+            errorEl.textContent = "La fréquence doit être positive.";
+            resultsEl.classList.add("hidden");
+            return;
+        }
+
+        const ns = (60 * f) / p;
+        let glissement = null;
+        let omega = null;
+        let couple = null;
+        const steps = [`Ns = 60 × f / p = 60 × ${formatNumber(f)} / ${p} = ${formatNumber(ns)} tr/min`];
+
+        if (n !== null) {
+            if (!Number.isFinite(n) || n < 0 || n > ns) {
+                errorEl.textContent = "La vitesse mesurée doit être positive et inférieure ou égale à la vitesse de synchronisme.";
+                resultsEl.classList.add("hidden");
+                return;
+            }
+
+            glissement = (ns - n) / ns;
+            omega = (2 * Math.PI * n) / 60;
+            steps.push(`g = (Ns − N) / Ns = (${formatNumber(ns)} − ${formatNumber(n)}) / ${formatNumber(ns)} = ${formatNumber(glissement * 100)} %`);
+            steps.push(`ω = 2π × N / 60 = ${formatNumber(omega)} rad/s`);
+
+            if (puissance !== null && Number.isFinite(puissance) && puissance > 0) {
+                couple = (9550 * puissance) / n;
+                steps.push(`C ≈ 9550 × P(kW) / N = 9550 × ${formatNumber(puissance)} / ${formatNumber(n)} = ${formatNumber(couple)} N·m`);
+            }
+        }
+
+        document.getElementById("motNs").textContent = `${formatNumber(ns)} tr/min`;
+        document.getElementById("motG").textContent = glissement !== null ? `${formatNumber(glissement * 100)} %` : "—";
+        document.getElementById("motC").textContent = couple !== null ? `${formatNumber(couple)} N·m` : "—";
+        document.getElementById("motOmega").textContent = omega !== null ? `${formatNumber(omega)} rad/s` : "—";
+        resultsEl.classList.remove("hidden");
+
+        if (pedagogicalMode && pedagogicalMode.checked) {
+            showSteps("stepsMoteur", "Étapes du calcul", steps);
+        } else {
+            hideSteps("stepsMoteur");
+        }
+
+        addHistory({ voltage: null, current: null, resistance: null, power: couple }, "Moteur asynchrone");
+    });
+}
+
+/* ==========================================================
+   Calculateur transformateur
+   ========================================================== */
+const formTransfo = document.getElementById("formTransfo");
+
+if (formTransfo) {
+    formTransfo.addEventListener("submit", event => {
+        event.preventDefault();
+
+        const errorEl = document.getElementById("errorTransfo");
+        const resultsEl = document.getElementById("resultsTransfo");
+        errorEl.textContent = "";
+
+        const u1 = Number.parseFloat(document.getElementById("trU1").value);
+        const u2 = Number.parseFloat(document.getElementById("trU2").value);
+        const i1Input = document.getElementById("trI1").value;
+        const i1 = i1Input === "" ? null : Number.parseFloat(i1Input);
+
+        if (!Number.isFinite(u1) || !Number.isFinite(u2) || u1 <= 0 || u2 <= 0) {
+            errorEl.textContent = "Veuillez renseigner des tensions primaire et secondaire positives.";
+            resultsEl.classList.add("hidden");
+            return;
+        }
+
+        const m = u2 / u1;
+        const steps = [`m = U2 / U1 = ${formatNumber(u2)} / ${formatNumber(u1)} = ${formatNumber(m, 4)}`];
+        let i2 = null;
+
+        if (i1 !== null) {
+            if (!Number.isFinite(i1) || i1 < 0) {
+                errorEl.textContent = "Le courant primaire doit être positif.";
+                resultsEl.classList.add("hidden");
+                return;
+            }
+
+            i2 = i1 / m;
+            steps.push(`I2 = I1 / m = ${formatNumber(i1)} / ${formatNumber(m, 4)} = ${formatNumber(i2)} A (transformateur idéal)`);
+        }
+
+        document.getElementById("trM").textContent = formatNumber(m, 4);
+        document.getElementById("trI2").textContent = i2 !== null ? `${formatNumber(i2)} A` : "—";
+        resultsEl.classList.remove("hidden");
+
+        if (pedagogicalMode && pedagogicalMode.checked) {
+            showSteps("stepsTransfo", "Étapes du calcul", steps);
+        } else {
+            hideSteps("stepsTransfo");
+        }
+
+        addHistory({ voltage: u1, current: i2, resistance: null, power: null }, "Transformateur");
+    });
+}
+
+/* ==========================================================
+   Calculateur couplage étoile / triangle
+   ========================================================== */
+const formCouplage = document.getElementById("formCouplage");
+
+if (formCouplage) {
+    formCouplage.addEventListener("submit", event => {
+        event.preventDefault();
+
+        const errorEl = document.getElementById("errorCouplage");
+        const resultsEl = document.getElementById("resultsCouplage");
+        errorEl.textContent = "";
+
+        const u = Number.parseFloat(document.getElementById("coupU").value);
+        const iInput = document.getElementById("coupI").value;
+        const i = iInput === "" ? null : Number.parseFloat(iInput);
+
+        if (!Number.isFinite(u) || u <= 0) {
+            errorEl.textContent = "Veuillez renseigner une tension réseau positive.";
+            resultsEl.classList.add("hidden");
+            return;
+        }
+
+        const uY = u / Math.sqrt(3);
+        const uD = u;
+        const steps = [
+            `Étoile : U enroulement = U / √3 = ${formatNumber(u)} / 1,73 = ${formatNumber(uY)} V`,
+            `Triangle : U enroulement = U = ${formatNumber(uD)} V`
+        ];
+
+        let iY = null;
+        let iD = null;
+
+        if (i !== null) {
+            if (!Number.isFinite(i) || i < 0) {
+                errorEl.textContent = "Le courant de ligne doit être positif.";
+                resultsEl.classList.add("hidden");
+                return;
+            }
+
+            iY = i;
+            iD = i / Math.sqrt(3);
+            steps.push(`Étoile : I enroulement = I ligne = ${formatNumber(iY)} A`);
+            steps.push(`Triangle : I enroulement = I / √3 = ${formatNumber(i)} / 1,73 = ${formatNumber(iD)} A`);
+        }
+
+        document.getElementById("coupUY").textContent = `${formatNumber(uY)} V`;
+        document.getElementById("coupUD").textContent = `${formatNumber(uD)} V`;
+        document.getElementById("coupIY").textContent = iY !== null ? `${formatNumber(iY)} A` : "—";
+        document.getElementById("coupID").textContent = iD !== null ? `${formatNumber(iD)} A` : "—";
+        resultsEl.classList.remove("hidden");
+
+        if (pedagogicalMode && pedagogicalMode.checked) {
+            showSteps("stepsCouplage", "Étapes du calcul", steps);
+        } else {
+            hideSteps("stepsCouplage");
+        }
+
+        addHistory({ voltage: uY, current: iY, resistance: null, power: null }, "Couplage Y/Δ");
+    });
+}

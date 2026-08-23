@@ -1,0 +1,1243 @@
+/* ===================================================================
+   ElectroCalc Pro — style.css
+   Organisation : variables & thème -> reset -> mise en page -> composants
+   =================================================================== */
+
+:root {
+    --primary: #2563eb;
+    --primary-dark: #1d4ed8;
+    --primary-light: #eff6ff;
+    --bg: #f1f5f9;
+    --surface: #ffffff;
+    --border: #e2e8f0;
+    --text: #0f172a;
+    --muted: #64748b;
+    --shadow: 0 1px 3px rgba(15, 23, 42, 0.08), 0 1px 2px rgba(15, 23, 42, 0.04);
+    --shadow-lg: 0 18px 40px rgba(15, 23, 42, 0.14);
+    --radius: 16px;
+    --radius-sm: 10px;
+    --success: #16a34a;
+    --danger: #dc2626;
+    --danger-bg: #fef2f2;
+}
+
+body.dark {
+    --bg: #0b1220;
+    --surface: #161f30;
+    --border: #263349;
+    --text: #f1f5f9;
+    --muted: #93a2ba;
+    --primary-light: rgba(37, 99, 235, 0.16);
+    --shadow: 0 1px 3px rgba(0, 0, 0, 0.5), 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 18px 40px rgba(0, 0, 0, 0.45);
+    --danger-bg: rgba(220, 38, 38, 0.14);
+}
+
+/* ---------- Reset & base ---------- */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--text);
+    background: var(--bg);
+    transition: background 0.25s ease, color 0.25s ease;
+}
+
+h1, h2, h3 {
+    margin: 0;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+}
+
+p {
+    margin: 0;
+}
+
+button {
+    font-family: inherit;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* ---------- Layout ---------- */
+.app-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.main-content {
+    flex: 1;
+    width: min(1180px, 100%);
+    margin: 0 auto;
+    padding: 0 24px 64px;
+}
+
+/* ---------- Topbar ---------- */
+.topbar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    min-height: 76px;
+    display: flex;
+    align-items: center;
+    background: color-mix(in srgb, var(--surface) 92%, transparent);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.brand-icon {
+    width: 42px;
+    height: 42px;
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+    font-size: 17px;
+    color: #fff;
+    background: linear-gradient(135deg, var(--primary), #1e3a8a);
+}
+
+.topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.icon-btn {
+    width: 38px;
+    height: 38px;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--surface);
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.icon-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.version {
+    padding: 5px 10px;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.03em;
+    color: var(--muted);
+    background: var(--bg);
+    border-radius: 20px;
+}
+
+/* ---------- Hero ---------- */
+.hero {
+    position: relative;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    align-items: center;
+    gap: 32px;
+    margin: 28px 0 32px;
+    padding: 52px 40px;
+    border-radius: 24px;
+    color: #fff;
+    background: linear-gradient(135deg, #1e3a8a, #2563eb 55%, #3b82f6);
+}
+
+.eyebrow {
+    margin: 0 0 12px;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    color: #bfdbfe;
+}
+
+.hero h1 {
+    font-size: clamp(1.6rem, 3.2vw, 2.35rem);
+    line-height: 1.2;
+    margin-bottom: 14px;
+}
+
+.hero-description {
+    max-width: 46ch;
+    color: #dbeafe;
+    font-size: 0.92rem;
+    line-height: 1.65;
+}
+
+.hero-visual {
+    position: relative;
+    height: 250px;
+    display: grid;
+    place-items: center;
+}
+
+.circuit-orbit {
+    position: absolute;
+    border: 1px dashed rgba(255, 255, 255, 0.32);
+    border-radius: 50%;
+}
+
+.orbit-one {
+    width: 220px;
+    height: 220px;
+    animation: spin 20s linear infinite;
+}
+
+.orbit-two {
+    width: 155px;
+    height: 155px;
+    animation: spin 14s linear infinite reverse;
+}
+
+.hero-symbol {
+    width: 84px;
+    height: 84px;
+    display: grid;
+    place-items: center;
+    font-size: 32px;
+    color: #fff;
+    border-radius: 22px;
+    background: rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.26);
+}
+
+.floating-symbol {
+    position: absolute;
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: #fff;
+    border-radius: 9px;
+    background: rgba(255, 255, 255, 0.16);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    animation: float 4.5s ease-in-out infinite;
+}
+
+.symbol-one { top: 12%; left: 8%; }
+.symbol-two { top: 18%; right: 6%; animation-delay: 0.6s; }
+.symbol-three { bottom: 10%; left: 42%; animation-delay: 1.2s; }
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .circuit-orbit, .floating-symbol {
+        animation: none;
+    }
+}
+
+/* ---------- Buttons ---------- */
+.primary-btn,
+.secondary-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    border-radius: 11px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    transition: 0.2s ease;
+}
+
+.primary-btn {
+    color: #fff;
+    background: var(--primary);
+}
+
+.primary-btn:hover {
+    background: var(--primary-dark);
+}
+
+.secondary-btn {
+    color: var(--text);
+    background: var(--surface);
+    border: 1px solid var(--border);
+}
+
+.secondary-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+/* ---------- Cards / dashboard ---------- */
+.card {
+    padding: 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr;
+    gap: 20px;
+    align-items: start;
+}
+
+.card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 22px;
+}
+
+.section-label {
+    margin: 0 0 4px;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--primary);
+}
+
+.card-header h2 {
+    font-size: 1.15rem;
+}
+
+.status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    flex-shrink: 0;
+    padding: 6px 12px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--muted);
+    background: var(--bg);
+    border-radius: 20px;
+    white-space: nowrap;
+}
+
+.status-indicator span:first-child {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--success);
+}
+
+.reference-icon {
+    font-size: 20px;
+    color: var(--primary);
+}
+
+/* ---------- Calculator tabs ---------- */
+.calc-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    padding-bottom: 4px;
+    overflow-x: auto;
+}
+
+.calc-tab {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 14px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--muted);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: 0.15s ease;
+}
+
+.calc-tab:hover {
+    color: var(--primary);
+    border-color: var(--primary);
+}
+
+.calc-tab.active {
+    color: #fff;
+    background: var(--primary);
+    border-color: var(--primary);
+}
+
+.calc-panel {
+    display: none;
+}
+
+.calc-panel.active {
+    display: block;
+}
+
+.panel-intro {
+    margin-bottom: 18px;
+    font-size: 0.8rem;
+    color: var(--muted);
+    line-height: 1.6;
+}
+
+/* ---------- Forms ---------- */
+.calculator-form fieldset {
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+
+.input-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+.field label {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 8px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.input-unit {
+    display: flex;
+    align-items: stretch;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--bg);
+    overflow: hidden;
+    transition: 0.15s ease;
+}
+
+.input-unit:focus-within {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+.input-unit input,
+.input-unit select {
+    flex: 1;
+    min-width: 0;
+    padding: 11px 12px;
+    font-size: 0.92rem;
+    font-family: inherit;
+    color: var(--text);
+    background: transparent;
+    border: none;
+    outline: none;
+}
+
+.input-unit span {
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    font-size: 0.76rem;
+    font-weight: 700;
+    color: var(--muted);
+    border-left: 1px solid var(--border);
+    white-space: nowrap;
+}
+
+.field small {
+    display: block;
+    margin-top: 6px;
+    font-size: 0.68rem;
+    color: var(--muted);
+}
+
+.form-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 22px;
+}
+
+.error-message {
+    min-height: 1em;
+    margin-top: 14px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--danger);
+}
+
+.error-message:not(:empty) {
+    padding: 10px 14px;
+    background: var(--danger-bg);
+    border-radius: 10px;
+}
+
+/* ---------- Mode pédagogique ---------- */
+.mode-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+    font-size: 0.74rem;
+    font-weight: 700;
+    color: var(--muted);
+    cursor: pointer;
+    user-select: none;
+}
+
+.mode-toggle input {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--primary);
+    cursor: pointer;
+}
+
+.steps-box {
+    display: none;
+    margin-top: 16px;
+    padding: 14px 16px;
+    font-size: 0.8rem;
+    line-height: 1.9;
+    color: var(--text);
+    background: var(--bg);
+    border: 1px dashed var(--border);
+    border-radius: 12px;
+    font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+}
+
+.steps-box.visible {
+    display: block;
+}
+
+.steps-box .step-line {
+    display: block;
+}
+
+.steps-box .step-title {
+    display: block;
+    margin-bottom: 4px;
+    font-family: "Inter", sans-serif;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+/* ---------- Gauge (qualité du facteur de puissance) ---------- */
+.gauge {
+    margin-top: 18px;
+}
+
+.gauge-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--muted);
+}
+
+.gauge-track {
+    height: 8px;
+    border-radius: 6px;
+    background: var(--border);
+    overflow: hidden;
+}
+
+.gauge-fill {
+    height: 100%;
+    width: 0%;
+    border-radius: 6px;
+    background: linear-gradient(90deg, #ef4444, #f59e0b, #22c55e);
+    transition: width 0.5s ease;
+}
+
+/* ---------- Formulas aside ---------- */
+.formula-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 16px 0;
+}
+
+.formula-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+}
+
+.formula-symbol {
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    font-weight: 800;
+    color: var(--primary);
+    background: var(--primary-light);
+    border-radius: 9px;
+}
+
+.formula-item strong {
+    display: block;
+    font-size: 0.8rem;
+}
+
+.formula-item code {
+    font-size: 0.76rem;
+    color: var(--muted);
+    font-family: "JetBrains Mono", monospace;
+}
+
+.tip-box {
+    display: flex;
+    gap: 10px;
+    padding: 14px;
+    font-size: 0.78rem;
+    line-height: 1.55;
+    color: #92400e;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: 12px;
+}
+
+body.dark .tip-box {
+    color: #fcd34d;
+    background: rgba(251, 191, 36, 0.12);
+    border-color: rgba(251, 191, 36, 0.3);
+}
+
+/* ---------- Results ---------- */
+.results-section {
+    margin-top: 24px;
+}
+
+.section-title {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-bottom: 16px;
+}
+
+.calculation-date {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--muted);
+}
+
+.results-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 14px;
+}
+
+.result-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+}
+
+.result-icon {
+    width: 42px;
+    height: 42px;
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    font-size: 16px;
+    border-radius: 11px;
+}
+
+.result-card.blue .result-icon { color: #1d4ed8; background: #dbeafe; }
+.result-card.orange .result-icon { color: #c2410c; background: #ffedd5; }
+.result-card.purple .result-icon { color: #7e22ce; background: #f3e8ff; }
+.result-card.green .result-icon { color: #15803d; background: #dcfce7; }
+
+.result-card span {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--muted);
+}
+
+.result-card strong {
+    display: block;
+    margin-top: 2px;
+    font-size: 1.05rem;
+}
+
+.advanced-results {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    padding: 16px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+}
+
+.advanced-results span {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--muted);
+}
+
+.advanced-results strong {
+    display: block;
+    margin-top: 4px;
+    font-size: 0.92rem;
+}
+
+/* Mini résultats pour les nouveaux calculateurs (résultat compact en ligne) */
+.mini-results {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.mini-result {
+    padding: 14px 16px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+}
+
+.mini-result span {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--muted);
+}
+
+.mini-result strong {
+    display: block;
+    margin-top: 4px;
+    font-size: 1.05rem;
+    color: var(--text);
+}
+
+/* ---------- Stats & learning (existant) ---------- */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin-bottom: 28px;
+}
+
+.stat-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 18px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: var(--surface);
+    box-shadow: var(--shadow);
+}
+
+.stat-card strong,
+.stat-card small {
+    display: block;
+}
+
+.stat-card strong {
+    font-size: 0.85rem;
+}
+
+.stat-card small {
+    margin-top: 4px;
+    color: var(--muted);
+    font-size: 0.7rem;
+}
+
+.stat-icon {
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    border-radius: 11px;
+}
+
+.stat-icon.blue { color: #1d4ed8; background: #dbeafe; }
+.stat-icon.orange { color: #c2410c; background: #ffedd5; }
+.stat-icon.purple { color: #7e22ce; background: #f3e8ff; }
+.stat-icon.green { color: #15803d; background: #dcfce7; }
+
+.learning-section {
+    margin-top: 28px;
+}
+
+.learning-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+.learning-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 18px;
+    color: var(--text);
+    text-decoration: none;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: var(--surface);
+    box-shadow: var(--shadow);
+    transition: 0.2s ease;
+}
+
+.learning-card:hover {
+    border-color: var(--primary);
+    transform: translateY(-3px);
+}
+
+.learning-card > i:first-child {
+    color: var(--primary);
+    font-size: 22px;
+}
+
+.learning-card span {
+    flex: 1;
+}
+
+.learning-card strong,
+.learning-card small {
+    display: block;
+}
+
+.learning-card strong {
+    font-size: 0.82rem;
+}
+
+.learning-card small {
+    margin-top: 4px;
+    color: var(--muted);
+    font-size: 0.7rem;
+}
+
+.learning-card > i:last-child {
+    color: var(--muted);
+    font-size: 0.8rem;
+}
+
+/* ---------- History ---------- */
+.history-card {
+    margin-top: 28px;
+}
+
+.history-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.small-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    font-size: 0.74rem;
+    font-weight: 700;
+    color: var(--text);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    cursor: pointer;
+    transition: 0.15s ease;
+}
+
+.small-btn:hover {
+    color: var(--primary);
+    border-color: var(--primary);
+}
+
+.small-btn.danger:hover {
+    color: var(--danger);
+    border-color: var(--danger);
+}
+
+.table-wrapper {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+}
+
+th, td {
+    padding: 11px 14px;
+    text-align: left;
+    white-space: nowrap;
+    border-bottom: 1px solid var(--border);
+}
+
+thead th {
+    font-size: 0.66rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--muted);
+    background: var(--bg);
+}
+
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.empty-history {
+    padding: 26px;
+    text-align: center;
+    color: var(--muted);
+}
+
+/* ---------- Footer ---------- */
+.footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 44px;
+    padding: 24px;
+    font-size: 0.76rem;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
+}
+
+.footer p {
+    margin: 0;
+}
+
+.footer-note {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* ===================================================================
+   Éléments repris tels quels du style.css d'origine
+   =================================================================== */
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.skip-link {
+    position: fixed;
+    top: -100px;
+    left: 20px;
+    z-index: 1000;
+    padding: 12px 16px;
+    color: white;
+    border-radius: 8px;
+    background: #1d4ed8;
+}
+
+.skip-link:focus {
+    top: 20px;
+}
+
+.topbar-inner {
+    width: min(1180px, 100%);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 25px;
+    margin: auto;
+}
+
+.brand {
+    color: inherit;
+    text-decoration: none;
+}
+
+.brand-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.brand-title {
+    font-size: 1.28rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+.brand-subtitle {
+    margin-top: 2px;
+    color: var(--muted);
+    font-size: 0.7rem;
+}
+
+.main-nav {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 11px;
+    color: var(--muted);
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-decoration: none;
+    border-radius: 9px;
+    transition: 0.2s ease;
+}
+
+.nav-link:hover,
+.nav-link.active {
+    color: var(--primary);
+    background: var(--primary-light);
+}
+
+.menu-btn {
+    display: none;
+}
+
+.section-description {
+    margin-top: 6px;
+    color: var(--muted);
+    font-size: 0.78rem;
+    line-height: 1.5;
+}
+
+.hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 25px;
+}
+
+.hero .primary-btn {
+    color: #1e3a8a;
+    background: white;
+}
+
+.hero .primary-btn:hover {
+    color: white;
+    background: var(--primary);
+}
+
+.hero-secondary-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 18px;
+    color: white;
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-decoration: none;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.hero-secondary-btn:hover {
+    background: rgba(255, 255, 255, 0.16);
+}
+
+.hero-features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 22px;
+    color: #bfdbfe;
+    font-size: 0.72rem;
+}
+
+.hero-features span {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.hero-features i {
+    color: #86efac;
+}
+
+/* ===================================================================
+   Responsive
+   =================================================================== */
+
+@media (max-width: 1000px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .hero {
+        grid-template-columns: 1fr;
+        padding: 40px 28px;
+    }
+
+    .hero-visual {
+        display: none;
+    }
+
+    .main-nav {
+        gap: 0;
+    }
+
+    .nav-link {
+        padding: 8px;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .learning-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .results-grid,
+    .advanced-results {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 760px) {
+    .topbar {
+        min-height: 70px;
+    }
+
+    .topbar-inner {
+        position: relative;
+    }
+
+    .brand-subtitle {
+        display: none;
+    }
+
+    .menu-btn {
+        display: inline-grid;
+        place-items: center;
+    }
+
+    .main-nav {
+        position: absolute;
+        top: 62px;
+        right: 0;
+        z-index: 20;
+        width: 220px;
+        display: none;
+        padding: 10px;
+        border: 1px solid var(--border);
+        border-radius: 13px;
+        background: var(--surface);
+        box-shadow: var(--shadow);
+    }
+
+    .main-nav.open {
+        display: grid;
+    }
+
+    .nav-link {
+        justify-content: flex-start;
+        padding: 11px;
+    }
+
+    .version {
+        display: none;
+    }
+
+    .card-header {
+        flex-wrap: wrap;
+    }
+
+    .mode-toggle {
+        margin-left: 0;
+    }
+
+    .input-grid,
+    .mini-results {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .stats-grid,
+    .results-grid,
+    .advanced-results {
+        grid-template-columns: 1fr;
+    }
+
+    .hero-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .hero-actions a {
+        justify-content: center;
+    }
+
+    .hero-features {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .form-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .calc-tabs {
+        margin: 0 -24px 20px;
+        padding: 0 24px 4px;
+    }
+}

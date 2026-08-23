@@ -1,0 +1,33 @@
+{
+    "id": "electrocalc-pro",
+    "name": "ElectroCalc Pro",
+    "short_name": "ElectroCalc",
+    "description": "5 calculateurs professionnels pour l'électricité, les moteurs et les transformateurs.",
+    "start_url": "./",
+    "scope": "./",
+    "display": "standalone",
+    "orientation": "portrait-primary",
+    "background_color": "#f1f5f9",
+    "theme_color": "#2563eb",
+    "lang": "fr",
+    "categories": ["utilities", "education", "productivity"],
+    "icons": [
+        {
+            "src": "favicon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml"
+        }
+    ],
+    "shortcuts": [
+        {
+            "name": "Calculateurs",
+            "url": "./#calculateur",
+            "description": "Ouvrir directement les calculateurs"
+        },
+        {
+            "name": "Formules",
+            "url": "./#formules",
+            "description": "Consulter les formules de référence"
+        }
+    ]
+}

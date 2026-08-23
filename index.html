@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="ElectroCalc Pro : calculatrice professionnelle pour moteurs électriques, transformateurs, circuits monophasés et triphasés."
+    >
+
+    <meta
+        name="keywords"
+        content="calcul électrique, moteur électrique, transformateur, loi d'Ohm, puissance triphasée, maintenance électromécanique"
+    >
+
+    <meta name="author" content="Adama Gueye">
+
+    <meta name="theme-color" content="#2563eb">
+
+    <meta
+        property="og:title"
+        content="ElectroCalc Pro — Calculs électriques professionnels"
+    >
+
+    <meta
+        property="og:description"
+        content="Outil pédagogique et professionnel pour l'analyse des circuits électriques."
+    >
+
+    <meta property="og:type" content="website">
+
+    <title>ElectroCalc Pro | Moteurs & Transformateurs</title>
+
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="favicon.svg">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ElectroCalc Pro">
+
+    <link
+        rel="preconnect"
+        href="https://cdnjs.cloudflare.com"
+    >
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2Tk7j0z8Oe6k1O6L1gZtJtG3G9yG5x7k5K9w=="
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer"
+    >
+
+    <link rel="stylesheet" href="style.css">
+
+    <link rel="manifest" href="manifest.json">
+
+    <script src="script.js" defer></script>
+</head>
+
+<body>
+    <a class="skip-link" href="#main-content">
+        Aller directement au contenu
+    </a>
+
+    <div class="app-container">
+
+        <header class="topbar">
+            <div class="topbar-inner">
+
+                <a
+                    class="brand"
+                    href="#accueil"
+                    aria-label="Retour à l'accueil ElectroCalc Pro"
+                >
+                    <span class="brand-icon" aria-hidden="true">
+                        <i class="fa-solid fa-bolt"></i>
+                    </span>
+
+                    <span class="brand-text">
+                        <span class="brand-title">
+                            ElectroCalc <strong>Pro</strong>
+                        </span>
+
+                        <span class="brand-subtitle">
+                            Moteurs & transformateurs électriques
+                        </span>
+                    </span>
+                </a>
+
+                <nav
+                    class="main-nav"
+                    id="mainNav"
+                    aria-label="Navigation principale"
+                >
+                    <a class="nav-link active" href="#accueil">
+                        <i class="fa-solid fa-house" aria-hidden="true"></i>
+                        Accueil
+                    </a>
+
+                    <a class="nav-link" href="#calculateur">
+                        <i class="fa-solid fa-calculator" aria-hidden="true"></i>
+                        Calculateur
+                    </a>
+
+                    <a class="nav-link" href="#formules">
+                        <i class="fa-solid fa-book-open" aria-hidden="true"></i>
+                        Formules
+                    </a>
+
+                    <a class="nav-link" href="#historique">
+                        <i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i>
+                        Historique
+                    </a>
+                </nav>
+
+                <div class="topbar-actions">
+                    <button
+                        id="themeBtn"
+                        class="icon-btn"
+                        type="button"
+                        title="Changer le thème"
+                        aria-label="Changer le thème"
+                        aria-pressed="false"
+                    >
+                        <i class="fa-solid fa-moon" aria-hidden="true"></i>
+                    </button>
+
+                    <button
+                        id="menuBtn"
+                        class="icon-btn menu-btn"
+                        type="button"
+                        title="Ouvrir le menu"
+                        aria-label="Ouvrir le menu"
+                        aria-controls="mainNav"
+                        aria-expanded="false"
+                    >
+                        <i class="fa-solid fa-bars" aria-hidden="true"></i>
+                    </button>
+
+                    <span class="version" aria-label="Version 2.2">
+                        v2.2
+                    </span>
+                </div>
+            </div>
+        </header>
+
+        <main id="main-content" class="main-content">
+
+            <section
+                id="accueil"
+                class="hero"
+                aria-labelledby="hero-title"
+            >
+                <div class="hero-content">
+                    <p class="eyebrow">
+                        OUTIL DE MAINTENANCE ÉLECTROMÉCANIQUE
+                    </p>
+
+                    <h1 id="hero-title">
+                        Analysez vos circuits électriques avec précision.
+                    </h1>
+
+                    <p class="hero-description">
+                        Calculez la tension, le courant, la résistance,
+                        les puissances et les grandeurs essentielles
+                        des systèmes électriques.
+                    </p>
+
+                    <div class="hero-actions">
+                        <a href="#calculateur" class="primary-btn">
+                            <i class="fa-solid fa-calculator" aria-hidden="true"></i>
+                            Commencer un calcul
+                        </a>
+
+                        <a href="#formules" class="hero-secondary-btn">
+                            <i class="fa-solid fa-book-open" aria-hidden="true"></i>
+                            Consulter les formules
+                        </a>
+                    </div>
+
+                    <div class="hero-features">
+                        <span>
+                            <i class="fa-solid fa-check-circle" aria-hidden="true"></i>
+                            Gratuit
+                        </span>
+
+                        <span>
+                            <i class="fa-solid fa-check-circle" aria-hidden="true"></i>
+                            Fonctionne hors ligne
+                        </span>
+
+                        <span>
+                            <i class="fa-solid fa-check-circle" aria-hidden="true"></i>
+                            Adapté à la maintenance
+                        </span>
+                    </div>
+                </div>
+
+                <div class="hero-visual" aria-hidden="true">
+                    <div class="circuit-orbit orbit-one"></div>
+                    <div class="circuit-orbit orbit-two"></div>
+
+                    <div class="hero-symbol">
+                        <i class="fa-solid fa-microchip"></i>
+                    </div>
+
+                    <span class="floating-symbol symbol-one">U</span>
+                    <span class="floating-symbol symbol-two">I</span>
+                    <span class="floating-symbol symbol-three">P</span>
+                </div>
+            </section>
+
+            <section
+                class="stats-grid"
+                aria-label="Fonctions principales"
+            >
+                <article class="stat-card">
+                    <span class="stat-icon blue">
+                        <i class="fa-solid fa-bolt" aria-hidden="true"></i>
+                    </span>
+
+                    <span>
+                        <strong>Loi d’Ohm</strong>
+                        <small>U, R et I</small>
+                    </span>
+                </article>
+
+                <article class="stat-card">
+                    <span class="stat-icon orange">
+                        <i class="fa-solid fa-plug" aria-hidden="true"></i>
+                    </span>
+
+                    <span>
+                        <strong>Puissance</strong>
+                        <small>Active, réactive, apparente</small>
+                    </span>
+                </article>
+
+                <article class="stat-card">
+                    <span class="stat-icon purple">
+                        <i class="fa-solid fa-rotate" aria-hidden="true"></i>
+                    </span>
+
+                    <span>
+                        <strong>Moteurs</strong>
+                        <small>Monophasés et triphasés</small>
+                    </span>
+                </article>
+
+                <article class="stat-card">
+                    <span class="stat-icon green">
+                        <i class="fa-solid fa-database" aria-hidden="true"></i>
+                    </span>
+
+                    <span>
+                        <strong>Historique</strong>
+                        <small>Enregistrement local</small>
+                    </span>
+                </article>
+            </section>
+
+            <section
+                id="calculateur"
+                class="dashboard-grid"
+                aria-labelledby="calculator-title"
+            >
+                <div class="calculator-card card">
+                    <div class="card-header">
+                        <div>
+                            <p class="section-label">
+                                CALCULATEURS
+                            </p>
+
+                            <h2 id="calculator-title">
+                                5 calculateurs électriques
+                            </h2>
+
+                            <p class="section-description">
+                                Choisissez un calculateur, saisissez vos grandeurs.
+                            </p>
+                        </div>
+
+                        <div
+                            class="status-indicator"
+                            role="status"
+                            aria-live="polite"
+                        >
+                            <span></span>
+                            <span id="statusText">Prêt</span>
+                        </div>
+                    </div>
+
+                    <div class="calc-tabs" role="tablist" aria-label="Choix du calculateur">
+                        <button type="button" class="calc-tab active" data-panel="panel-ohm" role="tab" aria-selected="true">
+                            <i class="fa-solid fa-bolt" aria-hidden="true"></i> Loi d’Ohm
+                        </button>
+                        <button type="button" class="calc-tab" data-panel="panel-triphase" role="tab" aria-selected="false">
+                            <i class="fa-solid fa-diagram-project" aria-hidden="true"></i> Triphasé
+                        </button>
+                        <button type="button" class="calc-tab" data-panel="panel-moteur" role="tab" aria-selected="false">
+                            <i class="fa-solid fa-rotate" aria-hidden="true"></i> Moteur asynchrone
+                        </button>
+                        <button type="button" class="calc-tab" data-panel="panel-transfo" role="tab" aria-selected="false">
+                            <i class="fa-solid fa-plug-circle-bolt" aria-hidden="true"></i> Transformateur
+                        </button>
+                        <button type="button" class="calc-tab" data-panel="panel-couplage" role="tab" aria-selected="false">
+                            <i class="fa-solid fa-triangle" aria-hidden="true"></i> Couplage Y/Δ
+                        </button>
+                    </div>
+
+                    <label class="mode-toggle" for="pedagogicalMode" style="margin-bottom: 16px; display: inline-flex;">
+                        <input type="checkbox" id="pedagogicalMode">
+                        <i class="fa-solid fa-graduation-cap" aria-hidden="true"></i>
+                        Mode pédagogique (afficher les étapes)
+                    </label>
+
+                    <!-- ===== Panneau 1 : Loi d'Ohm & puissance (existant) ===== -->
+                    <div class="calc-panel active" id="panel-ohm" role="tabpanel">
+                        <form
+                            id="calculatorForm"
+                            class="calculator-form"
+                            novalidate
+                        >
+                            <fieldset>
+                                <legend class="sr-only">
+                                    Grandeurs électriques
+                                </legend>
+
+                                <div class="input-grid">
+                                    <div class="field">
+                                        <label for="voltage">
+                                            <i class="fa-solid fa-bolt" aria-hidden="true"></i>
+                                            Tension
+                                        </label>
+
+                                        <div class="input-unit">
+                                            <input
+                                                id="voltage"
+                                                name="voltage"
+                                                type="number"
+                                                min="0"
+                                                step="any"
+                                                inputmode="decimal"
+                                                placeholder="Ex. 230"
+                                                autocomplete="off"
+                                                aria-describedby="voltageHelp"
+                                            >
+
+                                            <span aria-hidden="true">V</span>
+                                        </div>
+
+                                        <small id="voltageHelp">
+                                            Volt — tension du circuit
+                                        </small>
+                                    </div>
+
+                                    <div class="field">
+                                        <label for="current">
+                                            <i class="fa-solid fa-arrows-left-right" aria-hidden="true"></i>
+                                            Courant
+                                        </label>
+
+                                        <div class="input-unit">
+                                            <input
+                                                id="current"
+                                                name="current"
+                                                type="number"
+                                                min="0"
+                                                step="any"
+                                                inputmode="decimal"
+                                                placeholder="Ex. 5"
+                                                autocomplete="off"
+                                                aria-describedby="currentHelp"
+                                            >
+
+                                            <span aria-hidden="true">A</span>
+                                        </div>
+
+                                        <small id="currentHelp">
+                                            Ampère — courant électrique
+                                        </small>
+                                    </div>
+
+                                    <div class="field">
+                                        <label for="resistance">
+                                            <i class="fa-solid fa-gauge-high" aria-hidden="true"></i>
+                                            Résistance
+                                        </label>
+
+                                        <div class="input-unit">
+                                            <input
+                                                id="resistance"
+                                                name="resistance"
+                                                type="number"
+                                                min="0"
+                                                step="any"
+                                                inputmode="decimal"
+                                                placeholder="Ex. 46"
+                                                autocomplete="off"
+                                                aria-describedby="resistanceHelp"
+                                            >
+
+                                            <span aria-hidden="true">Ω</span>
+                                        </div>
+
+                                        <small id="resistanceHelp">
+                                            Ohm — opposition au courant
+                                        </small>
+                                    </div>
+
+                                    <div class="field">
+                                        <label for="powerFactor">
+                                            <i class="fa-solid fa-wave-square" aria-hidden="true"></i>
+                                            Facteur de puissance
+                                        </label>
+
+                                        <div class="input-unit">
+                                            <input
+                                                id="powerFactor"
+                                                name="powerFactor"
+                                                type="number"
+                                                min="0.01"
+                                                max="1"
+                                                step="0.01"
+                                                value="1"
+                                                inputmode="decimal"
+                                                placeholder="Ex. 0.85"
+                                                autocomplete="off"
+                                                aria-describedby="powerFactorHelp"
+                                            >
+
+                                            <span aria-hidden="true">cos φ</span>
+                                        </div>
+
+                                        <small id="powerFactorHelp">
+                                            Valeur comprise entre 0 et 1
+                                        </small>
+                                    </div>
+                                </div>
+                            </fieldset>
+
+                            <div class="form-actions">
+                                <button
+                                    type="submit"
+                                    class="primary-btn"
+                                    id="calculateBtn"
+                                >
+                                    <i class="fa-solid fa-calculator" aria-hidden="true"></i>
+                                    Calculer
+                                </button>
+
+                                <button
+                                    type="button"
+                                    id="resetBtn"
+                                    class="secondary-btn"
+                                >
+                                    <i class="fa-solid fa-rotate-left" aria-hidden="true"></i>
+                                    Réinitialiser
+                                </button>
+                            </div>
+
+                            <div
+                                id="errorMessage"
+                                class="error-message"
+                                role="alert"
+                                aria-live="assertive"
+                            ></div>
+
+                            <div class="steps-box" id="stepsOhm"></div>
+                        </form>
+                    </div>
+
+                    <!-- ===== Panneau 2 : Puissance triphasée ===== -->
+                    <div class="calc-panel" id="panel-triphase" role="tabpanel">
+                        <p class="panel-intro">
+                            Calcule les puissances active, apparente et réactive
+                            d’un récepteur triphasé équilibré à partir de la
+                            tension entre phases et du courant de ligne.
+                        </p>
+
+                        <form id="formTriphase" class="calculator-form" novalidate>
+                            <div class="input-grid">
+                                <div class="field">
+                                    <label for="triU"><i class="fa-solid fa-bolt" aria-hidden="true"></i> Tension entre phases</label>
+                                    <div class="input-unit">
+                                        <input id="triU" type="number" min="0" step="any" inputmode="decimal" placeholder="Ex. 400" autocomplete="off">
+                                        <span aria-hidden="true">V</span>
+                                    </div>
+                                    <small>Tension composée U</small>
+                                </div>
+                                <div class="field">
+                                    <label for="triI"><i class="fa-solid fa-arrows-left-right" aria-hidden="true"></i> Courant de ligne</label>
+                                    <div class="input-unit">
+                                        <input id="triI" type="number" min="0" step="any" inputmode="decimal" placeholder="Ex. 20" autocomplete="off">
+                                        <span aria-hidden="true">A</span>
+                                    </div>
+                                    <small>Courant par phase (ligne)</small>
+                                </div>
+                                <div class="field">
+                                    <label for="triCos"><i class="fa-solid fa-wave-square" aria-hidden="true"></i> Facteur de puissance</label>
+                                    <div class="input-unit">
+                                        <input id="triCos" type="number" min="0.01" max="1" step="0.01" value="0.85" inputmode="decimal" autocomplete="off">
+                                        <span aria-hidden="true">cos φ</span>
+                                    </div>
+                                    <small>Valeur comprise entre 0 et 1</small>
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="submit" class="primary-btn">
+                                    <i class="fa-solid fa-calculator" aria-hidden="true"></i> Calculer
+                                </button>
+                                <button type="reset" class="secondary-btn">
+                                    <i class="fa-solid fa-rotate-left" aria-hidden="true"></i> Réinitialiser
+                                </button>
+                            </div>
+
+                            <div class="error-message" id="errorTriphase" role="alert" aria-live="assertive"></div>
+
+                            <div class="mini-results hidden" id="resultsTriphase">
+                                <div class="mini-result"><span>Puissance apparente</span><strong id="triS">—</strong></div>
+                                <div class="mini-result"><span>Puissance active</span><strong id="triP">—</strong></div>
+                                <div class="mini-result"><span>Puissance réactive</span><strong id="triQ">—</strong></div>
+                                <div class="mini-result"><span>Courant par enroulement (étoile)</span><strong id="triIphase">—</strong></div>
+                            </div>
+
+                            <div class="steps-box" id="stepsTriphase"></div>
+                        </form>
+                    </div>
+
+                    <!-- ===== Panneau 3 : Moteur asynchrone ===== -->
+                    <div class="calc-panel" id="panel-moteur" role="tabpanel">
+                        <p class="panel-intro">
+                            Calcule la vitesse de synchronisme, le glissement et
+                            le couple d’un moteur asynchrone. Laissez la vitesse
+                            mesurée vide si vous ne connaissez que la fréquence.
+                        </p>
+
+                        <form id="formMoteur" class="calculator-form" novalidate>
+                            <div class="input-grid">
+                                <div class="field">
+                                    <label for="motF"><i class="fa-solid fa-wave-square" aria-hidden="true"></i> Fréquence réseau</label>
+                                    <div class="input-unit">
+                                        <input id="motF" type="number" min="0" step="any" inputmode="decimal" placeholder="Ex. 50" autocomplete="off">
+                                        <span aria-hidden="true">Hz</span>
+                                    </div>
+                                    <small>Fréquence du réseau</small>
+                                </div>
+                                <div class="field">
+                                    <label for="motP"><i class="fa-solid fa-rotate" aria-hidden="true"></i> Paires de pôles</label>
+                                    <div class="input-unit">
+                                        <input id="motP" type="number" min="1" step="1" inputmode="numeric" placeholder="Ex. 2" autocomplete="off">
+                                        <span aria-hidden="true">p</span>
+                                    </div>
+                                    <small>Nombre de paires de pôles</small>
+                                </div>
+                                <div class="field">
+                                    <label for="motN"><i class="fa-solid fa-gauge-high" aria-hidden="true"></i> Vitesse mesurée</label>
+                                    <div class="input-unit">
+                                        <input id="motN" type="number" min="0" step="any" inputmode="decimal" placeholder="Optionnel" autocomplete="off">
+                                        <span aria-hidden="true">tr/min</span>
+                                    </div>
+                                    <small>Laisser vide si inconnue</small>
+                                </div>
+                                <div class="field">
+                                    <label for="motPuis"><i class="fa-solid fa-plug" aria-hidden="true"></i> Puissance utile</label>
+                                    <div class="input-unit">
+                                        <input id="motPuis" type="number" min="0" step="any" inputmode="decimal" placeholder="Optionnel" autocomplete="off">
+                                        <span aria-hidden="true">kW</span>
+                                    </div>
+                                    <small>Pour calculer le couple</small>
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="submit" class="primary-btn">
+                                    <i class="fa-solid fa-calculator" aria-hidden="true"></i> Calculer
+                                </button>
+                                <button type="reset" class="secondary-btn">
+                                    <i class="fa-solid fa-rotate-left" aria-hidden="true"></i> Réinitialiser
+                                </button>
+                            </div>
+
+                            <div class="error-message" id="errorMoteur" role="alert" aria-live="assertive"></div>
+
+                            <div class="mini-results hidden" id="resultsMoteur">
+                                <div class="mini-result"><span>Vitesse de synchronisme Ns</span><strong id="motNs">—</strong></div>
+                                <div class="mini-result"><span>Glissement</span><strong id="motG">—</strong></div>
+                                <div class="mini-result"><span>Couple utile</span><strong id="motC">—</strong></div>
+                                <div class="mini-result"><span>Vitesse angulaire ω</span><strong id="motOmega">—</strong></div>
+                            </div>
+
+                            <div class="steps-box" id="stepsMoteur"></div>
+                        </form>
+                    </div>
+
+                    <!-- ===== Panneau 4 : Transformateur ===== -->
+                    <div class="calc-panel" id="panel-transfo" role="tabpanel">
+                        <p class="panel-intro">
+                            Calcule le rapport de transformation et le courant
+                            secondaire estimé d’un transformateur idéal à partir
+                            des tensions primaire/secondaire.
+                        </p>
+
+                        <form id="formTransfo" class="calculator-form" novalidate>
+                            <div class="input-grid">
+                                <div class="field">
+                                    <label for="trU1"><i class="fa-solid fa-bolt" aria-hidden="true"></i> Tension primaire</label>
+                                    <div class="input-unit">
+                                        <input id="trU1" type="number" min="0" step="any" inputmode="decimal" placeholder="Ex. 20000" autocomplete="off">
+                                        <span aria-hidden="true">V</span>
+                                    </div>
+                                    <small>Tension au primaire U1</small>
+                                </div>
+                                <div class="field">
+                                    <label for="trU2"><i class="fa-solid fa-bolt" aria-hidden="true"></i> Tension secondaire</label>
+                                    <div class="input-unit">
+                                        <input id="trU2" type="number" min="0" step="any" inputmode="decimal" placeholder="Ex. 400" autocomplete="off">
+                                        <span aria-hidden="true">V</span>
+                                    </div>
+                                    <small>Tension au secondaire U2</small>
+                                </div>
+                                <div class="field">
+                                    <label for="trI1"><i class="fa-solid fa-arrows-left-right" aria-hidden="true"></i> Courant primaire</label>
+                                    <div class="input-unit">
+                                        <input id="trI1" type="number" min="0" step="any" inputmode="decimal" placeholder="Optionnel" autocomplete="off">
+                                        <span aria-hidden="true">A</span>
+                                    </div>
+                                    <small>Pour estimer I2 (transfo idéal)</small>
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="submit" class="primary-btn">
+                                    <i class="fa-solid fa-calculator" aria-hidden="true"></i> Calculer
+                                </button>
+                                <button type="reset" class="secondary-btn">
+                                    <i class="fa-solid fa-rotate-left" aria-hidden="true"></i> Réinitialiser
+                                </button>
+                            </div>
+
+                            <div class="error-message" id="errorTransfo" role="alert" aria-live="assertive"></div>
+
+                            <div class="mini-results hidden" id="resultsTransfo">
+                                <div class="mini-result"><span>Rapport de transformation m</span><strong id="trM">—</strong></div>
+                                <div class="mini-result"><span>Courant secondaire estimé</span><strong id="trI2">—</strong></div>
+                            </div>
+
+                            <div class="steps-box" id="stepsTransfo"></div>
+                        </form>
+                    </div>
+
+                    <!-- ===== Panneau 5 : Couplage étoile / triangle ===== -->
+                    <div class="calc-panel" id="panel-couplage" role="tabpanel">
+                        <p class="panel-intro">
+                            Calcule la tension et le courant par enroulement
+                            selon le couplage étoile (Y) ou triangle (Δ) choisi,
+                            à partir des grandeurs de ligne.
+                        </p>
+
+                        <form id="formCouplage" class="calculator-form" novalidate>
+                            <div class="input-grid">
+                                <div class="field">
+                                    <label for="coupU"><i class="fa-solid fa-bolt" aria-hidden="true"></i> Tension réseau (ligne)</label>
+                                    <div class="input-unit">
+                                        <input id="coupU" type="number" min="0" step="any" inputmode="decimal" placeholder="Ex. 400" autocomplete="off">
+                                        <span aria-hidden="true">V</span>
+                                    </div>
+                                    <small>Tension entre phases</small>
+                                </div>
+                                <div class="field">
+                                    <label for="coupI"><i class="fa-solid fa-arrows-left-right" aria-hidden="true"></i> Courant de ligne</label>
+                                    <div class="input-unit">
+                                        <input id="coupI" type="number" min="0" step="any" inputmode="decimal" placeholder="Optionnel" autocomplete="off">
+                                        <span aria-hidden="true">A</span>
+                                    </div>
+                                    <small>Courant de ligne mesuré</small>
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="submit" class="primary-btn">
+                                    <i class="fa-solid fa-calculator" aria-hidden="true"></i> Calculer
+                                </button>
+                                <button type="reset" class="secondary-btn">
+                                    <i class="fa-solid fa-rotate-left" aria-hidden="true"></i> Réinitialiser
+                                </button>
+                            </div>
+
+                            <div class="error-message" id="errorCouplage" role="alert" aria-live="assertive"></div>
+
+                            <div class="mini-results hidden" id="resultsCouplage">
+                                <div class="mini-result"><span>Tension par enroulement — Étoile</span><strong id="coupUY">—</strong></div>
+                                <div class="mini-result"><span>Tension par enroulement — Triangle</span><strong id="coupUD">—</strong></div>
+                                <div class="mini-result"><span>Courant par enroulement — Étoile</span><strong id="coupIY">—</strong></div>
+                                <div class="mini-result"><span>Courant par enroulement — Triangle</span><strong id="coupID">—</strong></div>
+                            </div>
+
+                            <div class="steps-box" id="stepsCouplage"></div>
+                        </form>
+                    </div>
+                </div>
+
+                <aside
+                    id="formules"
+                    class="info-card card"
+                    aria-labelledby="formula-title"
+                >
+                    <div class="card-header">
+                        <div>
+                            <p class="section-label">RÉFÉRENCE TECHNIQUE</p>
+
+                            <h2 id="formula-title">
+                                Formules utilisées
+                            </h2>
+                        </div>
+
+                        <i
+                            class="fa-solid fa-book-open reference-icon"
+                            aria-hidden="true"
+                        ></i>
+                    </div>
+
+                    <div class="formula-list">
+                        <div class="formula-item">
+                            <span class="formula-symbol">U</span>
+
+                            <div>
+                                <strong>Loi d’Ohm</strong>
+                                <code>U = R × I</code>
+                            </div>
+                        </div>
+
+                        <div class="formula-item">
+                            <span class="formula-symbol">P</span>
+
+                            <div>
+                                <strong>Puissance active</strong>
+                                <code>P = U × I × cos φ</code>
+                            </div>
+                        </div>
+
+                        <div class="formula-item">
+                            <span class="formula-symbol">S</span>
+
+                            <div>
+                                <strong>Puissance apparente</strong>
+                                <code>S = U × I</code>
+                            </div>
+                        </div>
+
+                        <div class="formula-item">
+                            <span class="formula-symbol">Q</span>
+
+                            <div>
+                                <strong>Puissance réactive</strong>
+                                <code>Q = √(S² − P²)</code>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tip-box">
+                        <i
+                            class="fa-solid fa-lightbulb"
+                            aria-hidden="true"
+                        ></i>
+
+                        <p>
+                            Pour une charge alternative, utilisez le facteur
+                            de puissance réel indiqué sur la plaque signalétique
+                            ou la documentation du moteur.
+                        </p>
+                    </div>
+                </aside>
+            </section>
+
+            <section
+                id="resultsSection"
+                class="results-section hidden"
+                aria-labelledby="results-title"
+                aria-live="polite"
+            >
+                <div class="section-title">
+                    <div>
+                        <p class="section-label">RÉSULTATS</p>
+
+                        <h2 id="results-title">
+                            Analyse du circuit
+                        </h2>
+                    </div>
+
+                    <time
+                        id="calculationDate"
+                        class="calculation-date"
+                        datetime=""
+                    ></time>
+                </div>
+
+                <div class="results-grid">
+                    <article class="result-card blue">
+                        <div class="result-icon">
+                            <i class="fa-solid fa-bolt" aria-hidden="true"></i>
+                        </div>
+
+                        <div>
+                            <span>Tension</span>
+                            <strong id="resultVoltage">—</strong>
+                        </div>
+                    </article>
+
+                    <article class="result-card orange">
+                        <div class="result-icon">
+                            <i
+                                class="fa-solid fa-arrows-left-right"
+                                aria-hidden="true"
+                            ></i>
+                        </div>
+
+                        <div>
+                            <span>Courant</span>
+                            <strong id="resultCurrent">—</strong>
+                        </div>
+                    </article>
+
+                    <article class="result-card purple">
+                        <div class="result-icon">
+                            <i
+                                class="fa-solid fa-gauge-high"
+                                aria-hidden="true"
+                            ></i>
+                        </div>
+
+                        <div>
+                            <span>Résistance</span>
+                            <strong id="resultResistance">—</strong>
+                        </div>
+                    </article>
+
+                    <article class="result-card green">
+                        <div class="result-icon">
+                            <i
+                                class="fa-solid fa-plug"
+                                aria-hidden="true"
+                            ></i>
+                        </div>
+
+                        <div>
+                            <span>Puissance active</span>
+                            <strong id="resultPower">—</strong>
+                        </div>
+                    </article>
+                </div>
+
+                <div class="advanced-results">
+                    <div>
+                        <span>Puissance apparente</span>
+                        <strong id="resultApparentPower">—</strong>
+                    </div>
+
+                    <div>
+                        <span>Puissance réactive</span>
+                        <strong id="resultReactivePower">—</strong>
+                    </div>
+
+                    <div>
+                        <span>Facteur de puissance</span>
+                        <strong id="resultPowerFactor">—</strong>
+                    </div>
+                </div>
+
+                <div class="gauge">
+                    <div class="gauge-label">
+                        <span>Qualité du facteur de puissance</span>
+                        <span id="gaugePercent">—</span>
+                    </div>
+                    <div class="gauge-track">
+                        <div class="gauge-fill" id="gaugeFill"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section
+                id="historique"
+                class="history-card card"
+                aria-labelledby="history-title"
+            >
+                <div class="section-title">
+                    <div>
+                        <p class="section-label">DONNÉES LOCALES</p>
+
+                        <h2 id="history-title">
+                            Historique des calculs
+                        </h2>
+
+                        <p class="section-description">
+                            Les résultats sont conservés uniquement dans ce navigateur.
+                        </p>
+                    </div>
+
+                    <div class="history-actions">
+                        <button
+                            id="exportBtn"
+                            class="small-btn"
+                            type="button"
+                        >
+                            <i
+                                class="fa-solid fa-file-csv"
+                                aria-hidden="true"
+                            ></i>
+                            Exporter
+                        </button>
+
+                        <button
+                            id="clearHistoryBtn"
+                            class="small-btn danger"
+                            type="button"
+                        >
+                            <i
+                                class="fa-solid fa-trash"
+                                aria-hidden="true"
+                            ></i>
+                            Effacer
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-wrapper">
+                    <table>
+                        <caption class="sr-only">
+                            Historique des calculs électriques
+                        </caption>
+
+                        <thead>
+                            <tr>
+                                <th scope="col">Type</th>
+                                <th scope="col">Date</th>
+                                <th scope="col">Tension</th>
+                                <th scope="col">Courant</th>
+                                <th scope="col">Résistance</th>
+                                <th scope="col">Puissance</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="historyBody">
+                            <tr>
+                                <td
+                                    colspan="6"
+                                    class="empty-history"
+                                >
+                                    Aucun calcul enregistré.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section
+                class="learning-section"
+                aria-labelledby="learning-title"
+            >
+                <div class="section-title">
+                    <div>
+                        <p class="section-label">APPRENTISSAGE</p>
+
+                        <h2 id="learning-title">
+                            Ressources de maintenance
+                        </h2>
+                    </div>
+                </div>
+
+                <div class="learning-grid">
+                    <a class="learning-card" href="#formules">
+                        <i class="fa-solid fa-book" aria-hidden="true"></i>
+
+                        <span>
+                            <strong>Formules électriques</strong>
+                            <small>Réviser les relations essentielles</small>
+                        </span>
+
+                        <i
+                            class="fa-solid fa-arrow-right"
+                            aria-hidden="true"
+                        ></i>
+                    </a>
+
+                    <a class="learning-card" href="#calculateur">
+                        <i
+                            class="fa-solid fa-screwdriver-wrench"
+                            aria-hidden="true"
+                        ></i>
+
+                        <span>
+                            <strong>Diagnostic pratique</strong>
+                            <small>Analyser les grandeurs d’un circuit</small>
+                        </span>
+
+                        <i
+                            class="fa-solid fa-arrow-right"
+                            aria-hidden="true"
+                        ></i>
+                    </a>
+
+                    <a class="learning-card" href="#accueil">
+                        <i
+                            class="fa-solid fa-graduation-cap"
+                            aria-hidden="true"
+                        ></i>
+
+                        <span>
+                            <strong>Formation technique</strong>
+                            <small>Progresser en électromécanique</small>
+                        </span>
+
+                        <i
+                            class="fa-solid fa-arrow-right"
+                            aria-hidden="true"
+                        ></i>
+                    </a>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <div>
+                <p>
+                    © 2026 ElectroCalc Pro —
+                    Développé pour l’analyse et la maintenance électrique.
+                </p>
+
+                <p class="footer-note">
+                    Projet pédagogique d’Adama Gueye.
+                </p>
+            </div>
+
+            <p class="footer-note">
+                <i
+                    class="fa-solid fa-shield-halved"
+                    aria-hidden="true"
+                ></i>
+
+                Calculs effectués localement dans votre navigateur.
+            </p>
+        </footer>
+    </div>
+</body>
+</html>
