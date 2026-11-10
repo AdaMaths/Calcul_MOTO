@@ -1,5 +1,13 @@
 "use strict";
 
+/* ==========================================================
+   ElectroCalc Pro — script.js (v2.3)
+   Formules et données identiques à la v2.2.
+   Améliorations : champ vide accepté en loi d'Ohm, réinitialisation
+   complète des 5 calculateurs, statut, navigation clavier des onglets,
+   thème automatique, défilement vers les résultats, mode hors ligne.
+   ========================================================== */
+
 const form = document.getElementById("calculatorForm");
 const resetBtn = document.getElementById("resetBtn");
 const themeBtn = document.getElementById("themeBtn");
@@ -11,14 +19,24 @@ const resultsSection = document.getElementById("resultsSection");
 const historyBody = document.getElementById("historyBody");
 const calculationDate = document.getElementById("calculationDate");
 const pedagogicalMode = document.getElementById("pedagogicalMode");
+const statusText = document.getElementById("statusText");
 
 const STORAGE_KEY = "electrocalc_history";
 const THEME_KEY = "electrocalc_theme";
 
 let history = loadHistory();
+let statusTimer = null;
+
+/* ---------- Utilitaires ---------- */
 
 function getNumber(id) {
     return Number.parseFloat(document.getElementById(id).value);
+}
+
+/* Champ vide = grandeur inconnue (0), sinon la valeur saisie */
+function getNumberOrZero(id) {
+    const raw = document.getElementById(id).value;
+    return raw.trim() === "" ? 0 : Number.parseFloat(raw);
 }
 
 function formatNumber(value, decimals = 2) {
@@ -32,9 +50,68 @@ function formatNumber(value, decimals = 2) {
     }).format(value);
 }
 
+function escapeHtml(text) {
+    return String(text)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;");
+}
+
 function showError(message = "") {
     errorMessage.textContent = message;
 }
+
+function setStatus(message, isTemporary = true) {
+    if (!statusText) {
+        return;
+    }
+
+    statusText.textContent = message;
+    clearTimeout(statusTimer);
+
+    if (isTemporary) {
+        statusTimer = setTimeout(() => {
+            statusText.textContent = "Prêt";
+        }, 3000);
+    }
+}
+
+function showSteps(elementId, title, lines) {
+    const box = document.getElementById(elementId);
+    if (!box) {
+        return;
+    }
+
+    box.innerHTML = `<span class="step-title">${title}</span>` +
+        lines.map(line => `<span class="step-line">${line}</span>`).join("");
+
+    box.classList.add("visible");
+}
+
+function hideSteps(elementId) {
+    const box = document.getElementById(elementId);
+    if (box) {
+        box.classList.remove("visible");
+        box.innerHTML = "";
+    }
+}
+
+function scrollToElement(element) {
+    if (!element) {
+        return;
+    }
+
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    element.scrollIntoView({
+        behavior: reduce ? "auto" : "smooth",
+        block: "nearest"
+    });
+}
+
+/* ==========================================================
+   Loi d'Ohm & puissance
+   ========================================================== */
 
 function validateInputs(voltage, current, resistance, powerFactor) {
     if (
@@ -43,7 +120,7 @@ function validateInputs(voltage, current, resistance, powerFactor) {
         !Number.isFinite(resistance) ||
         !Number.isFinite(powerFactor)
     ) {
-        return "Veuillez renseigner correctement tous les champs.";
+        return "Veuillez renseigner correctement les champs.";
     }
 
     if (voltage < 0 || current < 0 || resistance < 0) {
@@ -129,10 +206,12 @@ function displayResults(values) {
     document.getElementById("resultPowerFactor").textContent =
         formatNumber(values.powerFactor, 2);
 
+    const now = new Date();
     calculationDate.textContent = new Intl.DateTimeFormat("fr-FR", {
         dateStyle: "medium",
         timeStyle: "short"
-    }).format(new Date());
+    }).format(now);
+    calculationDate.setAttribute("datetime", now.toISOString());
 
     const gaugeFill = document.getElementById("gaugeFill");
     const gaugePercent = document.getElementById("gaugePercent");
@@ -156,13 +235,22 @@ function displayResults(values) {
     resultsSection.classList.remove("hidden");
 }
 
+/* ==========================================================
+   Historique
+   ========================================================== */
+
 function saveHistory() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+    try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+    } catch {
+        /* stockage indisponible (navigation privée, quota…) */
+    }
 }
 
 function loadHistory() {
     try {
-        return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+        const data = JSON.parse(localStorage.getItem(STORAGE_KEY));
+        return Array.isArray(data) ? data : [];
     } catch {
         return [];
     }
@@ -202,18 +290,19 @@ function renderHistory() {
             timeStyle: "short"
         }).format(new Date(item.date));
 
-        const cell = value => value === null || value === undefined
-            ? "—"
-            : `${formatNumber(value)}`;
+        const cell = (value, unit) =>
+            value === null || value === undefined
+                ? "—"
+                : `${formatNumber(value)} ${unit}`;
 
         return `
             <tr>
-                <td>${item.type ?? "Loi d’Ohm"}</td>
+                <td>${escapeHtml(item.type ?? "Loi d’Ohm")}</td>
                 <td>${date}</td>
-                <td>${item.voltage !== null ? cell(item.voltage) + " V" : "—"}</td>
-                <td>${item.current !== null ? cell(item.current) + " A" : "—"}</td>
-                <td>${item.resistance !== null ? cell(item.resistance) + " Ω" : "—"}</td>
-                <td>${item.power !== null ? cell(item.power) + " W" : "—"}</td>
+                <td>${cell(item.voltage, "V")}</td>
+                <td>${cell(item.current, "A")}</td>
+                <td>${cell(item.resistance, "Ω")}</td>
+                <td>${cell(item.power, "W")}</td>
             </tr>
         `;
     }).join("");
@@ -222,6 +311,7 @@ function renderHistory() {
 function exportHistory() {
     if (history.length === 0) {
         showError("L’historique est vide.");
+        setStatus("Historique vide");
         return;
     }
 
@@ -267,24 +357,64 @@ function exportHistory() {
 
     URL.revokeObjectURL(url);
     showError("");
+    setStatus("Historique exporté");
+}
+
+/* ==========================================================
+   Thème
+   ========================================================== */
+
+function applyTheme(isDark) {
+    document.body.classList.toggle("dark", isDark);
+
+    themeBtn.innerHTML = isDark
+        ? `<i class="fa-solid fa-sun" aria-hidden="true"></i>`
+        : `<i class="fa-solid fa-moon" aria-hidden="true"></i>`;
+
+    themeBtn.setAttribute("aria-pressed", String(isDark));
 }
 
 function loadTheme() {
-    const savedTheme = localStorage.getItem(THEME_KEY);
+    let savedTheme = null;
 
-    if (savedTheme === "dark") {
-        document.body.classList.add("dark");
-        themeBtn.innerHTML = `<i class="fa-solid fa-sun"></i>`;
+    try {
+        savedTheme = localStorage.getItem(THEME_KEY);
+    } catch {
+        savedTheme = null;
     }
+
+    if (savedTheme === "dark" || savedTheme === "light") {
+        applyTheme(savedTheme === "dark");
+        return;
+    }
+
+    /* Aucun choix enregistré : suivre le réglage de l'appareil */
+    applyTheme(window.matchMedia("(prefers-color-scheme: dark)").matches);
 }
+
+themeBtn.addEventListener("click", () => {
+    const isDark = !document.body.classList.contains("dark");
+    applyTheme(isDark);
+
+    try {
+        localStorage.setItem(THEME_KEY, isDark ? "dark" : "light");
+    } catch {
+        /* ignoré */
+    }
+});
+
+/* ==========================================================
+   Événements — loi d'Ohm
+   ========================================================== */
 
 form.addEventListener("submit", event => {
     event.preventDefault();
     showError("");
 
-    const voltage = getNumber("voltage");
-    const current = getNumber("current");
-    const resistance = getNumber("resistance");
+    /* Champ vide = inconnue : elle sera calculée */
+    const voltage = getNumberOrZero("voltage");
+    const current = getNumberOrZero("current");
+    const resistance = getNumberOrZero("resistance");
     const powerFactor = getNumber("powerFactor");
 
     const validationError = validateInputs(
@@ -296,6 +426,7 @@ form.addEventListener("submit", event => {
 
     if (validationError) {
         showError(validationError);
+        setStatus("Vérifiez les champs");
         return;
     }
 
@@ -309,8 +440,11 @@ form.addEventListener("submit", event => {
 
         displayResults(values);
         addHistory(values);
+        setStatus("Calcul effectué");
+        scrollToElement(resultsSection);
     } catch (error) {
         showError(error.message);
+        setStatus("Vérifiez les champs");
     }
 });
 
@@ -318,7 +452,9 @@ resetBtn.addEventListener("click", () => {
     form.reset();
     document.getElementById("powerFactor").value = "1";
     resultsSection.classList.add("hidden");
+    hideSteps("stepsOhm");
     showError("");
+    setStatus("Prêt", false);
 });
 
 clearHistoryBtn.addEventListener("click", () => {
@@ -337,46 +473,49 @@ clearHistoryBtn.addEventListener("click", () => {
     history = [];
     saveHistory();
     renderHistory();
+    setStatus("Historique effacé");
 });
 
 exportBtn.addEventListener("click", exportHistory);
 
-themeBtn.addEventListener("click", () => {
-    const isDark = document.body.classList.toggle("dark");
-
-    localStorage.setItem(
-        THEME_KEY,
-        isDark ? "dark" : "light"
-    );
-
-    themeBtn.innerHTML = isDark
-        ? `<i class="fa-solid fa-sun"></i>`
-        : `<i class="fa-solid fa-moon"></i>`;
-});
-
 document.querySelectorAll("input").forEach(input => {
     input.addEventListener("input", () => {
         showError("");
+        ["errorTriphase", "errorMoteur", "errorTransfo", "errorCouplage"].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.textContent = "";
+            }
+        });
     });
 });
 
-loadTheme();
-renderHistory();
-
+/* ==========================================================
+   Menu mobile & navigation
+   ========================================================== */
 
 const menuBtn = document.getElementById("menuBtn");
 const mainNav = document.getElementById("mainNav");
 const navLinks = document.querySelectorAll(".nav-link");
 
+function closeMenu() {
+    if (mainNav) {
+        mainNav.classList.remove("open");
+    }
+
+    if (menuBtn) {
+        menuBtn.setAttribute("aria-expanded", "false");
+        menuBtn.setAttribute("aria-label", "Ouvrir le menu");
+        menuBtn.innerHTML =
+            `<i class="fa-solid fa-bars" aria-hidden="true"></i>`;
+    }
+}
+
 if (menuBtn && mainNav) {
     menuBtn.addEventListener("click", () => {
         const isOpen = mainNav.classList.toggle("open");
 
-        menuBtn.setAttribute(
-            "aria-expanded",
-            String(isOpen)
-        );
-
+        menuBtn.setAttribute("aria-expanded", String(isOpen));
         menuBtn.setAttribute(
             "aria-label",
             isOpen ? "Fermer le menu" : "Ouvrir le menu"
@@ -386,76 +525,103 @@ if (menuBtn && mainNav) {
             ? `<i class="fa-solid fa-xmark" aria-hidden="true"></i>`
             : `<i class="fa-solid fa-bars" aria-hidden="true"></i>`;
     });
+
+    document.addEventListener("keydown", event => {
+        if (event.key === "Escape") {
+            closeMenu();
+        }
+    });
+}
+
+function setActiveNav(hash) {
+    navLinks.forEach(item => {
+        item.classList.toggle("active", item.getAttribute("href") === hash);
+    });
 }
 
 navLinks.forEach(link => {
     link.addEventListener("click", () => {
-        navLinks.forEach(item => {
-            item.classList.remove("active");
-        });
-
-        link.classList.add("active");
-
-        if (mainNav) {
-            mainNav.classList.remove("open");
-        }
-
-        if (menuBtn) {
-            menuBtn.setAttribute("aria-expanded", "false");
-            menuBtn.setAttribute("aria-label", "Ouvrir le menu");
-            menuBtn.innerHTML =
-                `<i class="fa-solid fa-bars" aria-hidden="true"></i>`;
-        }
+        setActiveNav(link.getAttribute("href"));
+        closeMenu();
     });
 });
 
+/* Met en surbrillance la rubrique visible pendant le défilement */
+if ("IntersectionObserver" in window) {
+    const sections = ["accueil", "calculateur", "formules", "historique"]
+        .map(id => document.getElementById(id))
+        .filter(Boolean);
+
+    const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                setActiveNav(`#${entry.target.id}`);
+            }
+        });
+    }, { rootMargin: "-35% 0px -55% 0px" });
+
+    sections.forEach(section => observer.observe(section));
+}
+
 /* ==========================================================
-   Onglets des calculateurs
+   Onglets des calculateurs (souris + clavier)
    ========================================================== */
-const calcTabs = document.querySelectorAll(".calc-tab");
+
+const calcTabs = Array.from(document.querySelectorAll(".calc-tab"));
 const calcPanels = document.querySelectorAll(".calc-panel");
 
-calcTabs.forEach(tab => {
-    tab.addEventListener("click", () => {
-        calcTabs.forEach(t => {
-            t.classList.remove("active");
-            t.setAttribute("aria-selected", "false");
-        });
+function activateTab(tab, moveFocus = false) {
+    calcTabs.forEach(t => {
+        t.classList.remove("active");
+        t.setAttribute("aria-selected", "false");
+        t.setAttribute("tabindex", "-1");
+    });
 
-        calcPanels.forEach(p => p.classList.remove("active"));
+    calcPanels.forEach(p => p.classList.remove("active"));
 
-        tab.classList.add("active");
-        tab.setAttribute("aria-selected", "true");
+    tab.classList.add("active");
+    tab.setAttribute("aria-selected", "true");
+    tab.setAttribute("tabindex", "0");
 
-        const panel = document.getElementById(tab.dataset.panel);
-        if (panel) {
-            panel.classList.add("active");
+    const panel = document.getElementById(tab.dataset.panel);
+    if (panel) {
+        panel.classList.add("active");
+    }
+
+    if (moveFocus) {
+        tab.focus();
+    }
+}
+
+calcTabs.forEach((tab, index) => {
+    tab.setAttribute("aria-controls", tab.dataset.panel);
+    tab.setAttribute("tabindex", tab.classList.contains("active") ? "0" : "-1");
+
+    tab.addEventListener("click", () => activateTab(tab));
+
+    tab.addEventListener("keydown", event => {
+        let target = null;
+
+        if (event.key === "ArrowRight") {
+            target = calcTabs[(index + 1) % calcTabs.length];
+        } else if (event.key === "ArrowLeft") {
+            target = calcTabs[(index - 1 + calcTabs.length) % calcTabs.length];
+        } else if (event.key === "Home") {
+            target = calcTabs[0];
+        } else if (event.key === "End") {
+            target = calcTabs[calcTabs.length - 1];
+        }
+
+        if (target) {
+            event.preventDefault();
+            activateTab(target, true);
         }
     });
 });
 
 /* ==========================================================
-   Helpers "mode pédagogique"
+   Mode pédagogique
    ========================================================== */
-function showSteps(elementId, title, lines) {
-    const box = document.getElementById(elementId);
-    if (!box) {
-        return;
-    }
-
-    box.innerHTML = `<span class="step-title">${title}</span>` +
-        lines.map(line => `<span class="step-line">${line}</span>`).join("");
-
-    box.classList.add("visible");
-}
-
-function hideSteps(elementId) {
-    const box = document.getElementById(elementId);
-    if (box) {
-        box.classList.remove("visible");
-        box.innerHTML = "";
-    }
-}
 
 if (pedagogicalMode) {
     pedagogicalMode.addEventListener("change", () => {
@@ -467,6 +633,36 @@ if (pedagogicalMode) {
         }
     });
 }
+
+/* ==========================================================
+   Réinitialisation des calculateurs secondaires
+   ========================================================== */
+
+[
+    ["formTriphase", "resultsTriphase", "stepsTriphase", "errorTriphase", true],
+    ["formMoteur", "resultsMoteur", "stepsMoteur", "errorMoteur", false],
+    ["formTransfo", "resultsTransfo", "stepsTransfo", "errorTransfo", false],
+    ["formCouplage", "resultsCouplage", "stepsCouplage", "errorCouplage", false]
+].forEach(([formId, resultsId, stepsId, errorId, restoreCos]) => {
+    const formEl = document.getElementById(formId);
+    if (!formEl) {
+        return;
+    }
+
+    formEl.addEventListener("reset", () => {
+        document.getElementById(resultsId).classList.add("hidden");
+        document.getElementById(errorId).textContent = "";
+        hideSteps(stepsId);
+        setStatus("Prêt", false);
+
+        /* Le « reset » natif vide les champs : on remet les valeurs par défaut */
+        if (restoreCos) {
+            setTimeout(() => {
+                document.getElementById("triCos").value = "0.85";
+            }, 0);
+        }
+    });
+});
 
 /* ==========================================================
    Calculateur triphasé
@@ -520,6 +716,7 @@ if (formTriphase) {
         }
 
         addHistory({ voltage: u, current: i, resistance: null, power: p }, "Triphasé");
+        setStatus("Calcul effectué");
     });
 }
 
@@ -573,7 +770,7 @@ if (formMoteur) {
             steps.push(`g = (Ns − N) / Ns = (${formatNumber(ns)} − ${formatNumber(n)}) / ${formatNumber(ns)} = ${formatNumber(glissement * 100)} %`);
             steps.push(`ω = 2π × N / 60 = ${formatNumber(omega)} rad/s`);
 
-            if (puissance !== null && Number.isFinite(puissance) && puissance > 0) {
+            if (puissance !== null && Number.isFinite(puissance) && puissance > 0 && n > 0) {
                 couple = (9550 * puissance) / n;
                 steps.push(`C ≈ 9550 × P(kW) / N = 9550 × ${formatNumber(puissance)} / ${formatNumber(n)} = ${formatNumber(couple)} N·m`);
             }
@@ -592,6 +789,7 @@ if (formMoteur) {
         }
 
         addHistory({ voltage: null, current: null, resistance: null, power: couple }, "Moteur asynchrone");
+        setStatus("Calcul effectué");
     });
 }
 
@@ -645,6 +843,7 @@ if (formTransfo) {
         }
 
         addHistory({ voltage: u1, current: i2, resistance: null, power: null }, "Transformateur");
+        setStatus("Calcul effectué");
     });
 }
 
@@ -707,5 +906,20 @@ if (formCouplage) {
         }
 
         addHistory({ voltage: uY, current: iY, resistance: null, power: null }, "Couplage Y/Δ");
+        setStatus("Calcul effectué");
+    });
+}
+
+/* ==========================================================
+   Démarrage & mode hors ligne
+   ========================================================== */
+loadTheme();
+renderHistory();
+
+if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) {
+    window.addEventListener("load", () => {
+        navigator.serviceWorker.register("sw.js").catch(() => {
+            /* l'application reste utilisable sans mode hors ligne */
+        });
     });
 }
